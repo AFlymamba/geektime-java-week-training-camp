@@ -1,0 +1,114 @@
+**1.（选做）**自己写一个简单的 Hello.java，里面需要涉及基本类型，四则运行，if 和 for，然后自己分析一下对应的字节码，有问题群里讨论。
+
+**2.（必做）**自定义一个 Classloader，加载一个 Hello.xlass 文件，执行 hello 方法，此文件内容是一个 Hello.class 文件所有字节（x=255-x）处理后的文件。文件群里提供。
+
+```java
+package com.jvm.work;
+
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+
+/**
+ * 自定义 类加载器，加载 Hello 类的字节码文件
+ * 分析：
+ * 生成过程：
+ * Hello.xlass文件：Hello.java -> Hello.class -> 对所有的字节做了一个反码的操作（255 - 当前字节） -> Hello.xlass文件
+ * 解析过程：
+ * ①先通过 io 流加载
+ * ②做反码操作
+ * ③通过类加载器去加载
+ *
+ * @author huangyin
+ */
+public class HelloClassLoader extends ClassLoader {
+    /**
+     * test
+     *
+     * @param args 参数
+     */
+    public static void main(String[] args) {
+        try {
+            // 根据类加载器，获取类的 Class 对象
+            Class<?> helloClass = new HelloClassLoader().findClass("Hello");
+            // 根据 Class 对象，生成对应的 类的对象
+            Object helloObj = helloClass.newInstance();
+            // 根据方法名获取方法
+            Method helloMethod = helloClass.getMethod("hello");
+            // 传入对象，做执行操作
+            helloMethod.invoke(helloObj);
+        } catch (ClassNotFoundException | InvocationTargetException | NoSuchMethodException | InstantiationException | IllegalAccessException e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * @param name 类名
+     * @return 类对应的Class对象
+     * @throws ClassNotFoundException 异常声明
+     */
+    @Override
+    protected Class<?> findClass(String name) throws ClassNotFoundException {
+        try {
+            // 1、加载 文件 到 内存中
+            byte[] bytes = loadData();
+            // 2、对数据做相应转换
+            for (int i = 0; i < bytes.length; i++) {
+                bytes[i] = (byte) (255 - bytes[i]);
+            }
+            // 根据文件内容，以及类名，定义类
+            return defineClass(name, bytes, 0, bytes.length);
+        } catch (IOException e) {
+            e.printStackTrace();
+            throw new ClassNotFoundException();
+        }
+    }
+
+    /**
+     * 通过 IO流 读取文件到内存
+     *
+     * @return 文件内容
+     * @throws IOException 异常声明
+     */
+    private byte[] loadData() throws IOException {
+        // 获取输入流
+        FileInputStream fis = new FileInputStream("E:\\workspaces\\workspace-practice\\daily_code_record\\jvm-demo\\resource\\Hello.xlass");
+        byte[] bytes = new byte[fis.available()];
+        fis.read(bytes);
+        fis.close();
+        return bytes;
+    }
+}
+```
+
+**验证结果：**
+
+![1616328797621](C:\Users\Administrator\AppData\Roaming\Typora\typora-user-images\1616328797621.png)
+
+**3.（必做）**画一张图，展示 Xmx、Xms、Xmn、Meta、DirectMemory、Xss 这些内存参数的关系。
+
+![JVM内存模型](C:\Users\Administrator\Downloads\JVM内存模型.png)
+
+![xms等](C:\Users\Administrator\Downloads\xms等.png)
+
+**说明：**
+
+```markdown
+JVM中堆大小有三方面限制：
+	OS的数据模型限制（64位还是32位）
+	系统的可用虚拟内存限制
+	系统的可用物理内存限制
+-Xmx：堆最大内存
+-Xms：堆初始化内存
+-Xmn：年轻代内存大小
+Meta：元数据区，包含了常量池和方法区
+DirectMemory：直接内存，不属于JVM运行时数据区，堆外，可以通过 native直接申请内存，基于NIO
+Xss：线程栈的大小，一个线程启动被jvm执行，栈区就会划分一片线程栈给它使用，一个线程栈下有多个栈帧，一般一个方法（栈帧）写完之后是可以预估出大小的，因为方法中局部变量存储、操作数栈、class指针存储这些都可以估算出来，这个大小决定了栈的深度。
+```
+
+**4.（选做）**检查一下自己维护的业务系统的 JVM 参数配置，用 jstat 和 jstack、jmap 查看一下详情，并且自己独立分析一下大概情况，思考有没有不合理的地方，如何改进。
+
+**注意：**如果没有线上系统，可以自己 run 一个 web/java 项目。
+
+**5.（选做）**本机使用 G1 GC 启动一个程序，仿照课上案例分析一下 JVM 情况。
