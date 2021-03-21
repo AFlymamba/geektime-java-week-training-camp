@@ -84,13 +84,13 @@ public class HelloClassLoader extends ClassLoader {
 
 **验证结果：**
 
-![](../../photo/1616328797621.png)
+![自定义ClassLoader处理结果](../../photo/1616328797621.png)
 
 **3.（必做）**画一张图，展示 Xmx、Xms、Xmn、Meta、DirectMemory、Xss 这些内存参数的关系。
 
-![JVM内存模型](C:\Users\Administrator\Downloads\JVM内存模型.png)
+![JVM内存模型](../../photo/JVM内存模型.png)
 
-![xms等](C:\Users\Administrator\Downloads\xms等.png)
+![xms等](../../photo/xms等.png)
 
 **说明：**
 
