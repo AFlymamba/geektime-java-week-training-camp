@@ -84,7 +84,7 @@ public class HelloClassLoader extends ClassLoader {
 
 **验证结果：**
 
-![](E:\workspaces\workspace-practice\geektime-java-week-training-camp\photo\1616328797621.png)
+![](../../photo/1616328797621.png)
 
 **3.（必做）**画一张图，展示 Xmx、Xms、Xmn、Meta、DirectMemory、Xss 这些内存参数的关系。
 
