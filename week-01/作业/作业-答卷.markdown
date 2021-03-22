@@ -1,5 +1,202 @@
 **1.（选做）**自己写一个简单的 Hello.java，里面需要涉及基本类型，四则运行，if 和 for，然后自己分析一下对应的字节码，有问题群里讨论。
 
+```java
+package com.jvm.work;
+
+/**
+ * 简单实现四则运算、if、for，以及异常，javap反编译
+ *
+ * @author huangyin
+ */
+public class FirstHello {
+    private static int count = 0;
+    private static double sum = 0.0D;
+
+    private static void operate(final Integer num1, final Integer num2) {
+        count += 1;
+        // +
+        sum = sum + num1 + num2;
+        // -
+        sum = sum - num1 + num2;
+        // *
+        sum = sum * num1 * num2;
+        // /
+        sum = sum / 2;
+    }
+
+    public static void main(String[] args) {
+        int operation1 = 1;
+        int operation2 = 2;
+        for (int i = 0; i <= 10; i++) {
+            if (0 == i % 2) {
+                operate(operation1, operation2);
+            }
+        }
+        System.out.println("test end......");
+    }
+}
+```
+
+* javap -c -v -l FirstHello.class 文件（-c：反编译，-v：输出附加信息，-l：输出行号和本地变量表）
+
+```java
+Classfile /E:/workspaces/workspace-practice/daily_code_record/jvm-demo/src/com/jvm/work/FirstHello.class
+  Last modified 2021年3月22日; size 954 bytes
+  MD5 checksum 7196892629e7a49c01d45bd833ee4d74
+  Compiled from "FirstHello.java"
+public class com.jvm.work.FirstHello
+  minor version: 0
+  major version: 55
+  flags: (0x0021) ACC_PUBLIC, ACC_SUPER
+  this_class: #12                         // com/jvm/work/FirstHello
+  super_class: #13                        // java/lang/Object
+  interfaces: 0, fields: 2, methods: 4, attributes: 1
+Constant pool:
+   #1 = Methodref          #13.#30        // java/lang/Object."<init>":()V
+   #2 = Fieldref           #12.#31        // com/jvm/work/FirstHello.count:I
+   #3 = Fieldref           #12.#32        // com/jvm/work/FirstHello.sum:D
+   #4 = Methodref          #33.#34        // java/lang/Integer.intValue:()I
+   #5 = Double             2.0d
+   #7 = Methodref          #33.#35        // java/lang/Integer.valueOf:(I)Ljava/lang/Integer;
+   #8 = Methodref          #12.#36        // com/jvm/work/FirstHello.operate:(Ljava/lang/Integer;Ljava/lang/Integer;)V
+   #9 = Fieldref           #37.#38        // java/lang/System.out:Ljava/io/PrintStream;
+  #10 = String             #39            // test end......
+  #11 = Methodref          #40.#41        // java/io/PrintStream.println:(Ljava/lang/String;)V
+  #12 = Class              #42            // com/jvm/work/FirstHello
+  #13 = Class              #43            // java/lang/Object
+  #14 = Utf8               count
+  #15 = Utf8               I
+  #16 = Utf8               sum
+  #17 = Utf8               D
+  #18 = Utf8               <init>
+  #19 = Utf8               ()V
+  #20 = Utf8               Code
+  #21 = Utf8               LineNumberTable
+  #22 = Utf8               operate
+  #23 = Utf8               (Ljava/lang/Integer;Ljava/lang/Integer;)V
+  #24 = Utf8               main
+  #25 = Utf8               ([Ljava/lang/String;)V
+  #26 = Utf8               StackMapTable
+  #27 = Utf8               <clinit>
+  #28 = Utf8               SourceFile
+  #29 = Utf8               FirstHello.java
+  #30 = NameAndType        #18:#19        // "<init>":()V
+  #31 = NameAndType        #14:#15        // count:I
+  #32 = NameAndType        #16:#17        // sum:D
+  #33 = Class              #44            // java/lang/Integer
+  #34 = NameAndType        #45:#46        // intValue:()I
+  #35 = NameAndType        #47:#48        // valueOf:(I)Ljava/lang/Integer;
+  #36 = NameAndType        #22:#23        // operate:(Ljava/lang/Integer;Ljava/lang/Integer;)V
+  #37 = Class              #49            // java/lang/System
+  #38 = NameAndType        #50:#51        // out:Ljava/io/PrintStream;
+  #39 = Utf8               test end......
+  #40 = Class              #52            // java/io/PrintStream
+  #41 = NameAndType        #53:#54        // println:(Ljava/lang/String;)V
+  #42 = Utf8               com/jvm/work/FirstHello
+  #43 = Utf8               java/lang/Object
+  #44 = Utf8               java/lang/Integer
+  #45 = Utf8               intValue
+  #46 = Utf8               ()I
+  #47 = Utf8               valueOf
+  #48 = Utf8               (I)Ljava/lang/Integer;
+  #49 = Utf8               java/lang/System
+  #50 = Utf8               out
+  #51 = Utf8               Ljava/io/PrintStream;
+  #52 = Utf8               java/io/PrintStream
+  #53 = Utf8               println
+  #54 = Utf8               (Ljava/lang/String;)V
+{
+  public com.jvm.work.FirstHello();
+    descriptor: ()V
+    flags: (0x0001) ACC_PUBLIC
+    Code:
+      stack=1, locals=1, args_size=1
+         0: aload_0
+         1: invokespecial #1                  // Method java/lang/Object."<init>":()V
+         4: return
+      LineNumberTable:
+        line 8: 0
+
+  public static void main(java.lang.String[]);
+    descriptor: ([Ljava/lang/String;)V
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=3, locals=4, args_size=1
+         0: iconst_1
+         1: istore_1
+         2: iconst_2
+         3: istore_2
+         4: iconst_0
+         5: istore_3
+         6: iload_3
+         7: bipush        10
+         9: if_icmpgt     36
+        12: iconst_0
+        13: iload_3
+        14: iconst_2
+        15: irem
+        16: if_icmpne     30
+        19: iload_1
+        20: invokestatic  #7                  // Method java/lang/Integer.valueOf:(I)Ljava/lang/Integer;
+        23: iload_2
+        24: invokestatic  #7                  // Method java/lang/Integer.valueOf:(I)Ljava/lang/Integer;
+        27: invokestatic  #8                  // Method operate:(Ljava/lang/Integer;Ljava/lang/Integer;)V
+        30: iinc          3, 1
+        33: goto          6
+        36: getstatic     #9                  // Field java/lang/System.out:Ljava/io/PrintStream;
+        39: ldc           #10                 // String test end......
+        41: invokevirtual #11                 // Method java/io/PrintStream.println:(Ljava/lang/String;)V
+        44: return
+      LineNumberTable:
+        line 25: 0
+        line 26: 2
+        line 27: 4
+        line 28: 12
+        line 29: 19
+        line 27: 30
+        line 32: 36
+        line 33: 44
+      StackMapTable: number_of_entries = 3
+        frame_type = 254 /* append */
+          offset_delta = 6
+          locals = [ int, int, int ]
+        frame_type = 23 /* same */
+        frame_type = 250 /* chop */
+          offset_delta = 5
+
+  static {};
+    descriptor: ()V
+    flags: (0x0008) ACC_STATIC
+    Code:
+      stack=2, locals=0, args_size=0
+         0: iconst_0
+         1: putstatic     #2                  // Field count:I
+         4: dconst_0
+         5: putstatic     #3                  // Field sum:D
+         8: return
+      LineNumberTable:
+        line 9: 0
+        line 10: 4
+}
+SourceFile: "FirstHello.java"
+```
+
+```markdown
+说明：
+第一部分：
+	Class 文件位置，修改时间，MD5 检查，从哪个 .java 文件编译而来。
+第二部分：
+	描述了当前类 minor gc 版本、major gc 版本，当前类还有父类的存储位置，接口数、属性数量等。
+第三部分：
+	常量池描述，描述了方法引用、属性引用等和常量池内存的对应情况。
+第四部分：
+	反编译 class 文件描述；
+	构造方法：
+		栈深度为1，aload 从局部变量表中加载 0 这个索引位置的内容，然后 invoke 指令调用父类的 init 方法等
+	main 方法：
+		出入参描述，然后局部变量初始化（这块会存在栈帧内部和本地变量表交互），goto 这块表示 for 循环，if_icmpne 这块表示 if 分支模型等内容
+```
+
 **2.（必做）**自定义一个 Classloader，加载一个 Hello.xlass 文件，执行 hello 方法，此文件内容是一个 Hello.class 文件所有字节（x=255-x）处理后的文件。文件群里提供。
 
 ```java
