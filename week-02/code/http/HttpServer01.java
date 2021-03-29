@@ -7,35 +7,50 @@ import java.net.Socket;
 
 /**
  * 基于 Socket 实现服务端：目前是基于单线程
+ * <p>
+ * 套环：Socket 是 基于 ServerSocket 实现的
+ * 引申：
+ * JDBC 的 PreparedStatement 也是基于 JDBC 的 Connection 实现的
  *
  * @author huangyin
  */
 public class HttpServer01 {
     public static void main(String[] args) {
         ServerSocket serverSocket = null;
-        // 一直监听
-        while (true) {
-            try {
-                // 1、创建 ServerSocket，绑定8081端口
-                int port = 8081;
-                serverSocket = new ServerSocket(port);
+        try {
+            // 1、创建 ServerSocket，绑定8081端口
+            int port = 8081;
+            serverSocket = new ServerSocket(port);
+            Socket socket = null;
 
-                // 2、监听客户端连接，一个连接就是一个 Socket
-                Socket socket = serverSocket.accept();
-
-                // 3、业务代码
-                service(socket);
-            } catch (IOException e) {
-                e.printStackTrace();
-            } finally {
-                // 关闭相关资源
-                if (null != serverSocket) {
+            while (true) {
+                try {
+                    // 2、监听客户端连接，一个连接就是一个 Socket
+                    socket = serverSocket.accept();
+                    // 3、业务代码
+                    service(socket);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                } finally {
+                    // 关闭相关资源
                     try {
-                        serverSocket.close();
+                        if (null != socket) {
+                            socket.close();
+                        }
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
                 }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                if (null != serverSocket) {
+                    serverSocket.close();
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
             }
         }
     }
